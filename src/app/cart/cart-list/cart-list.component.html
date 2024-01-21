@@ -1,0 +1,16 @@
+<div class="card border-secondary">
+  <div class="card-header text-secondary fw-bold">
+    {{ pageTitle }}
+  </div>
+
+  <div class="card-body">
+    <!-- Display the cart items -->
+    <div *ngIf="cartItems().length; else noItems">
+      <div *ngFor="let item of cartItems()">
+        <sw-cart-item [cartItem]='item' />
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noItems> No items in cart </ng-template>
+</div>
