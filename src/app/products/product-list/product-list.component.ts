@@ -20,13 +20,15 @@ export class ProductListComponent {
   // Selected product id to highlight the entry
   selectedProductId$ = this.productService.productSelected$;
 
-  products$ = this.productService.products$
-  .pipe(
-    catchError(err => {
-      this.errorMessage = err;
-      return EMPTY;
-    })
-  );
+  // products$ = this.productService.products$
+  // .pipe(
+  //   catchError(err => {
+  //     this.errorMessage = err;
+  //     return EMPTY;
+  //   })
+  // );
+
+  products = this.productService.products;
 
   onSelected(productId: number): void {
     this.productService.productSelected(productId);
