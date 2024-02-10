@@ -1,13 +1,21 @@
 import { Injectable, computed, effect, signal } from "@angular/core";
 import { CartItem } from "./cart";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { Product } from "../products/product";
+import { toSignal } from "@angular/core/rxjs-interop";
 
+
+const CART_DATA = "cart_data";
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  cartItems = signal<CartItem[]>([]);
+
+  private subject = new BehaviorSubject<CartItem[]>([]);
+
+  cartItems$: Observable<CartItem[]> = this.subject.asObservable();
+
+  cartItems = toSignal(this.cartItems$, { initialValue: [] as CartItem[] }) //signal<C
 
   eLenght = effect(() => console.log("Cart length: ", this.cartItems().length))
 
@@ -22,19 +30,39 @@ export class CartService {
 
   totalPrice = computed<number>(() => this.subtotal() + this.tax() + this.deliveryFee());
 
+  /**
+   *
+   */
+  constructor() {
+    const cart = localStorage.getItem(CART_DATA);
 
+    if (cart)
+    {
+       this.subject.next(JSON.parse(cart));
+    }
+
+  }
+
+  private next(items:CartItem[]) {
+    this.subject.next(items);
+    localStorage.setItem(CART_DATA, JSON.stringify(items));
+  }
   addToCart(product: Product): void {
-    this.cartItems.update(items => [...items, { product, quantity: 1 }]);
+    var items = this.subject.getValue();
+    this.next([...items, { product, quantity: 1 }]);
 
   }
 
   updateQuantity(cartItem: CartItem, quantity: number): void {
-    this.cartItems.update(items => items.map(item => item.product.id === cartItem.product.id ? { ...item, quantity } : item));
+
+    var items = this.subject.getValue();
+    this.next(items.map(item => item.product.id === cartItem.product.id ? { ...item, quantity } : item));
 
   }
 
   removeFromCart(cartItem: CartItem): void {
-    this.cartItems.update(items => items.filter(item => item.product.id !== cartItem.product.id));
+    var items = this.subject.getValue();
+    this.next(items.filter(item => item.product.id !== cartItem.product.id));
 
   }
 }
