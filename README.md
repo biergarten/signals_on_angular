@@ -1,3 +1,11 @@
+###  notes by biergarten
+
+ - the initial commit has got the cart implemented, but we lost state when we update/refresh the page
+
+
+
+
+
 # Apm
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
